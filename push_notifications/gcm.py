@@ -39,13 +39,14 @@ def _gcm_send(data, content_type='application/json'):
         "Authorization": "key=%s" % key,
     }
 
+    registration_ids = data.get('registration_ids')
     data = json.dumps(data)
 
     response = requests.post(url=SETTINGS["GCM_POST_URL"],
                              data=data,
                              headers=headers)
 
-    return process_response_for_errors(data.get('registration_ids'), response.json())
+    return process_response_for_errors(registration_ids, response.json())
 
 
 def process_response_for_errors(recipient_list, response):
