@@ -1,2 +1,3 @@
 Django
 django-uuidfield
+djangorestframework==2.3.8
