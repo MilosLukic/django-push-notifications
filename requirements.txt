@@ -1,3 +1,4 @@
 Django
 django-uuidfield
 djangorestframework==2.3.8
+requests==1.2.0
