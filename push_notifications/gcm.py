@@ -54,14 +54,16 @@ def process_response_for_errors(recipient_list, response):
 
     for r in zip(results, recipient_list):
         if r[0].get('error') == 'NotRegistered':
-            device = GCMDevice.objects.get(registration_id=r[1])
-            device.active = False
-            device.save()
+            device = GCMDevice.objects.filter(registration_id=r[1])
+            for d in device:
+                d.active = False
+                d.save()
         if r[0].get('message_id'):
             if r[0].get('registration_id'):
-                device = GCMDevice.objects.get(registration_id=r[1])
-                device.registration_id = r[0].get('registration_id')
-                device.save()
+                device = GCMDevice.objects.filter(registration_id=r[1])
+                for d in device:
+                    d.registration_id = r[0].get('registration_id')
+                    d.save()
 
     return response
 
