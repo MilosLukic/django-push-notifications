@@ -8,6 +8,7 @@ from push_notifications.serializers import GCMDeviceSerializer, APNSDeviceSerial
 class GCMDeviceDetail(viewsets.ModelViewSet, NeverCacheMixin):
     serializer_class = GCMDeviceSerializer
     permission_classes = (permissions.IsAuthenticated, )
+    lookup_field = 'device_id'
 
     def get_queryset(self):
         return GCMDevice.objects.filter(user=self.request.user)
@@ -19,6 +20,7 @@ class GCMDeviceDetail(viewsets.ModelViewSet, NeverCacheMixin):
 class APNSDeviceDetail(viewsets.ModelViewSet, NeverCacheMixin):
     serializer_class = APNSDeviceSerializer
     permission_classes = (permissions.IsAuthenticated, )
+    lookup_field = 'device_id'
 
     def get_queryset(self):
         return APNSDevice.objects.filter(user=self.request.user)
