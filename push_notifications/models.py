@@ -28,7 +28,7 @@ class GCMDeviceManager(models.Manager):
 
 
 class GCMDeviceQuerySet(models.query.QuerySet):
-    def send_message(self, data, collapse_key=None, time_to_live=None, delay_while_idle=False):
+    def send_message(self, data, collapse_key=None, time_to_live=None, delay_while_idle=False, gcm_key=None):
         if self:
             from .gcm import gcm_send_bulk_message
 
@@ -37,7 +37,8 @@ class GCMDeviceQuerySet(models.query.QuerySet):
                 data=data,
                 collapse_key=collapse_key,
                 time_to_live=time_to_live,
-                delay_while_idle=delay_while_idle
+                delay_while_idle=delay_while_idle,
+                gcm_key=gcm_key
             )
 
 
@@ -54,15 +55,15 @@ class GCMDevice(Device):
     class Meta:
         verbose_name = _("GCM device")
 
-    def send_message(self, data, collapse_key=None, time_to_live=None, delay_while_idle=False):
+    def send_message(self, data, collapse_key=None, time_to_live=None, delay_while_idle=False, gcm_key=None):
         from .gcm import gcm_send_message
 
         return gcm_send_message(registration_id=self.registration_id,
                                 data=data,
                                 collapse_key=collapse_key,
                                 time_to_live=time_to_live,
-                                delay_while_idle=delay_while_idle
-                                )
+                                delay_while_idle=delay_while_idle,
+                                gcm_key=gcm_key)
 
 
 class APNSDeviceManager(models.Manager):
@@ -71,12 +72,12 @@ class APNSDeviceManager(models.Manager):
 
 
 class APNSDeviceQuerySet(models.query.QuerySet):
-    def send_message(self, message, **kwargs):
+    def send_message(self, message, cert_location=None, **kwargs):
         if self:
             from .apns import apns_send_bulk_message
 
             return apns_send_bulk_message(registration_ids=list(self.values_list("registration_id", flat=True)),
-                                          data=message, **kwargs)
+                                          data=message, cert_location=cert_location, **kwargs)
 
 
 class APNSDevice(Device):
@@ -89,7 +90,7 @@ class APNSDevice(Device):
     class Meta:
         verbose_name = _("APNS device")
 
-    def send_message(self, message, **kwargs):
+    def send_message(self, message, cert_location=None, **kwargs):
         from .apns import apns_send_message
 
-        return apns_send_message(registration_id=self.registration_id, data=message, **kwargs)
+        return apns_send_message(registration_id=self.registration_id, data=message, cert_location=cert_location, **kwargs)

@@ -26,9 +26,12 @@ class APNSDataOverflow(APNSError):
 APNS_MAX_NOTIFICATION_SIZE = 256
 
 
-def _apns_create_socket():
+def _apns_create_socket(cert_location=None):
     sock = socket()
-    certfile = SETTINGS.get("APNS_CERTIFICATE")
+    if cert_location is None:
+        certfile = SETTINGS.get("APNS_CERTIFICATE")
+    else:
+        certfile = cert_location
     if not certfile:
         raise ImproperlyConfigured(
             'You need to set PUSH_NOTIFICATIONS_SETTINGS["APNS_CERTIFICATE"] to send messages through APNS.'
@@ -53,7 +56,7 @@ def _apns_pack_message(token, data):
 
 
 def _apns_send(token, alert, badge=0, sound="chime", content_available=False, action_loc_key=None, loc_key=None,
-               loc_args=[], extra={}, socket=None):
+               loc_args=[], extra={}, socket=None, cert_location=None):
     data = {}
 
     if action_loc_key or loc_key or loc_args:
@@ -89,12 +92,12 @@ def _apns_send(token, alert, badge=0, sound="chime", content_available=False, ac
     if socket:
         socket.write(data)
     else:
-        socket = _apns_create_socket()
+        socket = _apns_create_socket(cert_location=cert_location)
         socket.write(data)
         socket.close()
 
 
-def apns_send_message(registration_id, data, **kwargs):
+def apns_send_message(registration_id, data, cert_location=None, **kwargs):
     """
     Sends an APNS notification to a single registration_id.
     This will send the notification as form data.
@@ -103,15 +106,15 @@ def apns_send_message(registration_id, data, **kwargs):
     Note that \a data should always be a string.
     """
 
-    return _apns_send(registration_id, data, **kwargs)
+    return _apns_send(registration_id, data, cert_location=cert_location, **kwargs)
 
 
-def apns_send_bulk_message(registration_ids, data, **kwargs):
+def apns_send_bulk_message(registration_ids, data, cert_location=None, **kwargs):
     """
     Sends an APNS notification to one or more registration_ids.
     The registration_ids argument needs to be a list.
     """
-    socket = _apns_create_socket()
+    socket = _apns_create_socket(cert_location=cert_location)
     for registration_id in registration_ids:
         _apns_send(registration_id, data, socket=socket, **kwargs)
 

@@ -27,8 +27,11 @@ def _chunks(l, n):
         yield l[i:i + n]
 
 
-def _gcm_send(data, content_type='application/json'):
-    key = SETTINGS.get("GCM_API_KEY")
+def _gcm_send(data, content_type='application/json', gcm_key=None):
+    if gcm_key is None:
+        key = SETTINGS.get("GCM_API_KEY")
+    else:
+        key = gcm_key
     if not key:
         raise ImproperlyConfigured(
             'You need to set PUSH_NOTIFICATIONS_SETTINGS["GCM_API_KEY"] to send messages through GCM.')
@@ -68,7 +71,7 @@ def process_response_for_errors(recipient_list, response):
     return response
 
 
-def gcm_send_message(registration_id, data, collapse_key=None, time_to_live=None,delay_while_idle=False):
+def gcm_send_message(registration_id, data, collapse_key=None, time_to_live=None,delay_while_idle=False, gcm_key=None):
     """
     Sends a GCM notification to a single registration_id.
     This will send the notification as form data.
@@ -90,10 +93,10 @@ def gcm_send_message(registration_id, data, collapse_key=None, time_to_live=None
     if time_to_live:
         values["time_to_live"] = time_to_live
 
-    return _gcm_send(values)
+    return _gcm_send(values, gcm_key=gcm_key)
 
 
-def gcm_send_bulk_message(registration_ids, data, collapse_key=None, time_to_live=None, delay_while_idle=False):
+def gcm_send_bulk_message(registration_ids, data, collapse_key=None, time_to_live=None, delay_while_idle=False, gcm_key=None):
     """
     Sends a GCM notification to one or more registration_ids. The registration_ids
     needs to be a list.
@@ -123,4 +126,4 @@ def gcm_send_bulk_message(registration_ids, data, collapse_key=None, time_to_liv
     if time_to_live:
         values["time_to_live"] = time_to_live
 
-    return _gcm_send(values)
+    return _gcm_send(values, gcm_key=gcm_key)
