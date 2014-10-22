@@ -23,7 +23,7 @@ class APNSDataOverflow(APNSError):
     pass
 
 
-APNS_MAX_NOTIFICATION_SIZE = 256
+APNS_MAX_NOTIFICATION_SIZE = 2048
 
 
 def _apns_create_socket(cert_location=None, apns_endpoint=None):
