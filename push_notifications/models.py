@@ -72,12 +72,14 @@ class APNSDeviceManager(models.Manager):
 
 
 class APNSDeviceQuerySet(models.query.QuerySet):
-    def send_message(self, message, cert_location=None, **kwargs):
+    def send_message(self, message, cert_location=None, apns_endpoint=None, **kwargs):
         if self:
             from .apns import apns_send_bulk_message
 
             return apns_send_bulk_message(registration_ids=list(self.values_list("registration_id", flat=True)),
-                                          data=message, cert_location=cert_location, **kwargs)
+                                          data=message,
+                                          cert_location=cert_location,
+                                          apns_endpoint=apns_endpoint,  **kwargs)
 
 
 class APNSDevice(Device):
@@ -90,7 +92,11 @@ class APNSDevice(Device):
     class Meta:
         verbose_name = _("APNS device")
 
-    def send_message(self, message, cert_location=None, **kwargs):
+    def send_message(self, message, cert_location=None, apns_endpoint=None, **kwargs):
         from .apns import apns_send_message
 
-        return apns_send_message(registration_id=self.registration_id, data=message, cert_location=cert_location, **kwargs)
+        return apns_send_message(registration_id=self.registration_id,
+                                 data=message,
+                                 cert_location=cert_location,
+                                 apns_endpoint=apns_endpoint
+                                 , **kwargs)

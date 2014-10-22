@@ -26,7 +26,7 @@ class APNSDataOverflow(APNSError):
 APNS_MAX_NOTIFICATION_SIZE = 256
 
 
-def _apns_create_socket(cert_location=None):
+def _apns_create_socket(cert_location=None, apns_endpoint=None):
     sock = socket()
     if cert_location is None:
         certfile = SETTINGS.get("APNS_CERTIFICATE")
@@ -45,7 +45,8 @@ def _apns_create_socket(cert_location=None):
         raise ImproperlyConfigured("The APNS certificate file at %r is not readable: %s" % (certfile, e))
 
     sock = ssl.wrap_socket(sock, ssl_version=ssl.PROTOCOL_TLSv1, certfile=certfile)
-    sock.connect((SETTINGS["APNS_HOST"], SETTINGS["APNS_PORT"]))
+    apns_host = apns_endpoint or SETTINGS["APNS_HOST"]
+    sock.connect((apns_host, SETTINGS["APNS_PORT"]))
 
     return sock
 
@@ -56,7 +57,7 @@ def _apns_pack_message(token, data):
 
 
 def _apns_send(token, alert, badge=0, sound="chime", content_available=False, action_loc_key=None, loc_key=None,
-               loc_args=[], extra={}, socket=None, cert_location=None):
+               loc_args=[], extra={}, socket=None, cert_location=None, apns_endpoint=None):
     data = {}
 
     if action_loc_key or loc_key or loc_args:
@@ -92,12 +93,12 @@ def _apns_send(token, alert, badge=0, sound="chime", content_available=False, ac
     if socket:
         socket.write(data)
     else:
-        socket = _apns_create_socket(cert_location=cert_location)
+        socket = _apns_create_socket(cert_location=cert_location, apns_endpoint=apns_endpoint)
         socket.write(data)
         socket.close()
 
 
-def apns_send_message(registration_id, data, cert_location=None, **kwargs):
+def apns_send_message(registration_id, data, cert_location=None, apns_endpoint=None, **kwargs):
     """
     Sends an APNS notification to a single registration_id.
     This will send the notification as form data.
@@ -106,15 +107,15 @@ def apns_send_message(registration_id, data, cert_location=None, **kwargs):
     Note that \a data should always be a string.
     """
 
-    return _apns_send(registration_id, data, cert_location=cert_location, **kwargs)
+    return _apns_send(registration_id, data, cert_location=cert_location, apns_endpoint=apns_endpoint, **kwargs)
 
 
-def apns_send_bulk_message(registration_ids, data, cert_location=None, **kwargs):
+def apns_send_bulk_message(registration_ids, data, cert_location=None, apns_endpoint=None, **kwargs):
     """
     Sends an APNS notification to one or more registration_ids.
     The registration_ids argument needs to be a list.
     """
-    socket = _apns_create_socket(cert_location=cert_location)
+    socket = _apns_create_socket(cert_location=cert_location, apns_endpoint=apns_endpoint)
     for registration_id in registration_ids:
         _apns_send(registration_id, data, socket=socket, **kwargs)
 
