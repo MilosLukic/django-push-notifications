@@ -93,6 +93,7 @@ class APNSDevice(Device):
 
     class Meta:
         verbose_name = _("APNS device")
+        unique_together = ('user', 'device_id',)
 
     def send_message(self, message, cert_location=None, apns_endpoint=None, **kwargs):
         from .apns import apns_send_message
