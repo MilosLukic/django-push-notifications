@@ -101,7 +101,10 @@ class APNSDevice(Device):
                                  apns_endpoint=apns_endpoint,
                                  **kwargs)
 
-    def save(self, force_insert=False, force_update=False, using=None):
-        exists = len(APNSDevice.objects.filter(user=self.user, device_id=self.device_id)) > 0
+    def save(self, *args, **kwargs):
+        exists = APNSDevice.objects.filter(user=self.user, device_id=self.device_id).count() > 0
+        print self.device_id
+        print self.user
+        print exists
         if exists is False:
-            super(APNSDevice, self).save()
+            super(APNSDevice, self).save(*args, **kwargs)
