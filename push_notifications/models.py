@@ -98,5 +98,10 @@ class APNSDevice(Device):
         return apns_send_message(registration_id=self.registration_id,
                                  data=message,
                                  cert_location=cert_location,
-                                 apns_endpoint=apns_endpoint
-                                 , **kwargs)
+                                 apns_endpoint=apns_endpoint,
+                                 **kwargs)
+
+    def save(self):
+        exists = len(APNSDevice.objects.filter(user=self.user, device_id=self.device_id)) > 0
+        if exists is False:
+            super(APNSDevice, self).save()
