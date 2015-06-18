@@ -2,7 +2,9 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from uuidfield import UUIDField
+import logging
 
+logger = logging.getLogger(__file__)
 
 # Compatibility with custom user models, while keeping backwards-compatibility with <1.5
 AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
@@ -103,8 +105,8 @@ class APNSDevice(Device):
 
     def save(self, *args, **kwargs):
         exists = APNSDevice.objects.filter(user=self.user, device_id=self.device_id).count() > 0
-        print self.device_id
-        print self.user
-        print exists
+        logger.error(self.user)
+        logger.error(self.device_id)
+        logger.error(exists)
         if exists is False:
             super(APNSDevice, self).save(*args, **kwargs)
