@@ -106,8 +106,5 @@ class APNSDevice(Device):
 
     def save(self, *args, **kwargs):
         exists = APNSDevice.objects.filter(user=self.user, device_id=self.device_id).count() > 0
-        logger.error(self.user)
-        logger.error(self.device_id)
-        logger.error(exists)
         if exists is False:
             super(APNSDevice, self).save(*args, **kwargs)
