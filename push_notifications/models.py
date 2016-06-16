@@ -67,6 +67,12 @@ class GCMDevice(Device):
                                 delay_while_idle=delay_while_idle,
                                 gcm_key=gcm_key)
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            GCMDevice.objects.filter(device_id=self.device_id).delete()
+        super(GCMDevice, self).save(*args, **kwargs)
+
+
 
 class APNSDeviceManager(models.Manager):
     def get_query_set(self):
