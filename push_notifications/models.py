@@ -16,6 +16,9 @@ class Device(models.Model):
                                  help_text=_("Inactive devices will not be sent notifications"))
     user = models.ForeignKey(AUTH_USER_MODEL, blank=True, null=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
     class Meta:
         abstract = True
 
@@ -99,7 +102,7 @@ class APNSDevice(Device):
 
     class Meta:
         verbose_name = _("APNS device")
-        unique_together = ('user', 'device_id',)
+        #unique_together = ('user', 'device_id',)
 
     def send_message(self, message, cert_location=None, apns_endpoint=None, **kwargs):
         from .apns import apns_send_message
