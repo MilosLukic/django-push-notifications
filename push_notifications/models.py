@@ -95,14 +95,13 @@ class APNSDeviceQuerySet(models.query.QuerySet):
 
 class APNSDevice(Device):
     device_id = UUIDField(verbose_name=_("Device ID"), blank=True, null=True,
-                          help_text="UDID / UIDevice.identifierForVendor()")
-    registration_id = models.CharField(verbose_name=_("Registration ID"), max_length=64)
+                          help_text="UDID / UIDevice.identifierForVendor()", unique=True)
+    registration_id = models.CharField(verbose_name=_("Registration ID"), max_length=64, unique=True)
 
     objects = APNSDeviceManager()
 
     class Meta:
         verbose_name = _("APNS device")
-        #unique_together = ('user', 'device_id',)
 
     def send_message(self, message, cert_location=None, apns_endpoint=None, **kwargs):
         from .apns import apns_send_message
@@ -116,4 +115,5 @@ class APNSDevice(Device):
     def save(self, *args, **kwargs):
         if self.pk is None:
             APNSDevice.objects.filter(device_id=self.device_id).delete()
+            APNSDevice.objects.filter(registration_id=self.registration_id).delete()
         super(APNSDevice, self).save(*args, **kwargs)
