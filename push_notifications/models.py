@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import ugettext_lazy as _
 from uuidfield import UUIDField
 import logging
@@ -95,8 +95,8 @@ class APNSDeviceQuerySet(models.query.QuerySet):
 
 class APNSDevice(Device):
     device_id = UUIDField(verbose_name=_("Device ID"), blank=True, null=True,
-                          help_text="UDID / UIDevice.identifierForVendor()", unique=True)
-    registration_id = models.CharField(verbose_name=_("Registration ID"), max_length=64, unique=True)
+                          help_text="UDID / UIDevice.identifierForVendor()")
+    registration_id = models.CharField(verbose_name=_("Registration ID"), max_length=64)
 
     objects = APNSDeviceManager()
 
@@ -113,7 +113,8 @@ class APNSDevice(Device):
                                  **kwargs)
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            APNSDevice.objects.filter(device_id=self.device_id).delete()
-            APNSDevice.objects.filter(registration_id=self.registration_id).delete()
-        super(APNSDevice, self).save(*args, **kwargs)
+        with transaction.atomic():
+            if self.pk is None:
+                APNSDevice.objects.filter(device_id=self.device_id).delete()
+                APNSDevice.objects.filter(registration_id=self.registration_id).delete()
+            super(APNSDevice, self).save(*args, **kwargs)
