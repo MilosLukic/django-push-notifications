@@ -42,7 +42,7 @@ class Device(models.Model):
 		blank=True, null=True
 	)
 
-	created = models.DateTimeField(auto_add_now=True)
+	created = models.DateTimeField(auto_now_add=True)
 	modified = models.DateTimeField(auto_now=True)
 
 	class Meta:
