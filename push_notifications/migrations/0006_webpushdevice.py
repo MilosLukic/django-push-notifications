@@ -20,6 +20,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, null=True, verbose_name='Name', blank=True)),
                 ('active', models.BooleanField(default=True, help_text='Inactive devices will not be sent notifications', verbose_name='Is active')),
                 ('date_created', models.DateTimeField(auto_now_add=True, verbose_name='Creation date', null=True)),
+				('created', models.DateTimeField(auto_now_add=True, verbose_name='Creation date')),
+				('modified', models.DateTimeField(auto_now=True, verbose_name='Modification date')),
                 ('application_id', models.CharField(help_text='Opaque application identity, should be filled in for multiple key/certificate access', max_length=64, null=True, verbose_name='Application ID', blank=True)),
                 ('registration_id', models.TextField(verbose_name='Registration ID')),
                 ('p256dh', models.CharField(max_length=88, verbose_name='User public encryption key')),

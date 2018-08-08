@@ -42,6 +42,9 @@ class Device(models.Model):
 		blank=True, null=True
 	)
 
+	created = models.DateTimeField(auto_add_now=True)
+	modified = models.DateTimeField(auto_now=True)
+
 	class Meta:
 		abstract = True
 
@@ -58,13 +61,9 @@ class GCMDeviceManager(models.Manager):
 
 
 class GCMDeviceQuerySet(models.query.QuerySet):
-	def send_message(self, message, **kwargs):
+	def send_message(self, data, **kwargs):
 		if self:
 			from .gcm import send_message as gcm_send_message
-
-			data = kwargs.pop("extra", {})
-			if message is not None:
-				data["message"] = message
 
 			app_ids = self.filter(active=True).order_by(
 				"application_id"

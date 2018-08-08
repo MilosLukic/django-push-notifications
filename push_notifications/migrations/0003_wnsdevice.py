@@ -21,6 +21,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, max_length=255, null=True, verbose_name='Name')),
                 ('active', models.BooleanField(default=True, help_text='Inactive devices will not be sent notifications', verbose_name='Is active')),
+				('created', models.DateTimeField(auto_now_add=True, verbose_name='Creation date')),
+				('modified', models.DateTimeField(auto_now=True, verbose_name='Modification date')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Creation date')),
                 ('device_id', models.UUIDField(blank=True, db_index=True, help_text='GUID()', null=True, verbose_name='Device ID')),
                 ('registration_id', models.TextField(verbose_name='Notification URI')),
