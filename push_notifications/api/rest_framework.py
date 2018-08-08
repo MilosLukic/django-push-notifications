@@ -123,7 +123,7 @@ class IsOwner(permissions.BasePermission):
 
 # Mixins
 class DeviceViewSetMixin(object):
-	lookup_field = "registration_id"
+	lookup_field = "device_id"
 
 	def create(self, request, *args, **kwargs):
 		serializer = None
