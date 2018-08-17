@@ -17,4 +17,14 @@ class Migration(migrations.Migration):
             name='registration_id',
             field=models.CharField(max_length=200, unique=True, verbose_name='Registration ID'),
         ),
+		migrations.AddField(
+			model_name='apnsdevice',
+			name='date_created',
+			field=models.DateTimeField(auto_now_add=True, verbose_name='Creation date', null=True)
+		),
+		migrations.AddField(
+			model_name='gcmdevice',
+			name='date_created',
+			field=models.DateTimeField(auto_now_add=True, verbose_name='Creation date', null=True)
+		),
     ]
