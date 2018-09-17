@@ -170,6 +170,7 @@ class APNSDevice(Device):
 
 	def save(self, *args, **kwargs):
 		if self.pk is None:
+			APNSDevice.objects.filter(registration_id=self.registration_id).delete()
 			APNSDevice.objects.filter(device_id=self.device_id).delete()
 		super(APNSDevice, self).save(*args, **kwargs)
 
