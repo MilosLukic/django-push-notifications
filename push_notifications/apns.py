@@ -54,9 +54,11 @@ def _apns_prepare(
 			if callable(badge):
 				badge = badge(token)
 
-		return apns2_payload.Payload(
+		payload = apns2_payload.Payload(
 			apns2_alert, badge, sound, content_available, mutable_content, category,
-			url_args, custom=extra, thread_id=thread_id)
+			url_args, thread_id=thread_id)
+		payload['aps'].update(extra)
+		return payload
 
 
 def _apns_send(

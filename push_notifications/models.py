@@ -176,6 +176,7 @@ class APNSDevice(Device):
 
 
 class WNSDeviceManager(models.Manager):
+
 	def get_queryset(self):
 		return WNSDeviceQuerySet(self.model)
 
