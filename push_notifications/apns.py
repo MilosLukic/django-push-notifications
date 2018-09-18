@@ -54,11 +54,9 @@ def _apns_prepare(
 			if callable(badge):
 				badge = badge(token)
 
-		payload = apns2_payload.Payload(
+		return OldPayload(
 			apns2_alert, badge, sound, content_available, mutable_content, category,
-			url_args, thread_id=thread_id)
-		payload['aps'].update(extra)
-		return payload
+			url_args, thread_id=thread_id, custom=extra)
 
 
 def _apns_send(
@@ -141,3 +139,33 @@ def apns_send_bulk_message(
 	inactive_tokens = [token for token, result in results.items() if result == "Unregistered"]
 	models.APNSDevice.objects.filter(registration_id__in=inactive_tokens).update(active=False)
 	return results
+
+
+class OldPayload(apns2_payload.Payload):
+	def dict(self):
+		result = {
+			'aps': {}
+		}
+		if self.alert is not None:
+			if isinstance(self.alert, apns2_payload.PayloadAlert):
+				result['aps']['alert'] = self.alert.dict()
+			else:
+				result['aps']['alert'] = self.alert
+		if self.badge is not None:
+			result['aps']['badge'] = self.badge
+		if self.sound is not None:
+			result['aps']['sound'] = self.sound
+		if self.content_available:
+			result['aps']['content-available'] = 1
+		if self.mutable_content:
+			result['aps']['mutable-content'] = 1
+		if self.thread_id is not None:
+			result['aps']['thread-id'] = self.thread_id
+		if self.category is not None:
+			result['aps']['category'] = self.category
+		if self.url_args is not None:
+			result['aps']['url-args'] = self.url_args
+		if self.custom is not None:
+			result['aps'].update(self.custom)
+
+		return result
